@@ -1,0 +1,78 @@
+<div class="row my-5">
+    <div class="col">
+        <h1 class="text-center mb-5">도서검색</h1>
+        <!--검색어입력-->
+        <div class="row justify-content-end">
+            <form name="frm" class="col-md-4">
+                <div class="input-group">
+                    <input name="query" class="form-control">
+                    <button class="btn btn-primary">검색</button>
+                </div>
+            </form>
+        </div>
+        <hr>
+        <!--도서검색결과출력-->
+        <div id="div_books"></div>
+        <!--페이지이동-->
+        <div class="text-center">
+            <button id="prev" class="btn btn-primary">이전</button>
+            <span id="span_page">1/10</span>
+            <button id="next" class="btn btn-primary">다음</button>
+        </div>
+    </div>
+</div>
+
+<!--도서검색템플릿-->
+<script id="temp_books" type="x-handlebars-template">
+    <table class="table table-striped">
+    {{#each documents}}
+        <tr>
+            <td><img src="{{thumbnail}}" width="50"></td>
+            <td>{{title}}</td>
+            <td>{{price}}</td>
+        </tr>
+    {{/each}}
+    </table>
+</script>
+
+<!--핸들바템플릿-->
+<script>
+    let query="자바";
+    let page=1;
+    getBooks();
+
+    //다음버튼을 클릭한 경우
+    $("#next").on("click", function(){
+        page++;
+        getBooks();
+    });
+
+    $("#prev").on("click", function(){
+        page--;
+        getBooks();
+    });
+
+    //폼이 서밋될 때,
+    $(frm).on("submit", function(e){
+        e.preventDefault();
+        query=$(frm.query).val();
+        page=1;
+        getBooks();
+    });
+
+    function getBooks() {
+    $.ajax({
+        type:"get",
+        headers:{"Authorization": "KakaoAK d98342bfb3d10bd8a8d18f10982fe1c8"},
+        url:"https://dapi.kakao.com/v3/search/book?target=title",
+        data:{query:query, page:page, size:5},
+        success:function(data) {
+            console.log(data);
+            const temp=Handlebars.compile($("#temp_books").html());
+            $("#div_books").html(temp(data));
+            const last=Math.ceil(data.meta.pageable_count/5);
+            $("#span_page").html(`${page}/${last}`);
+        }
+    });
+    }
+</script>
