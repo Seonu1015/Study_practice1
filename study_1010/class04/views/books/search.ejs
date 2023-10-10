@@ -65,7 +65,7 @@
 
     //폼이 서밋될 때,
     $(frm).on("submit", function(e){
-        e.preventDefault();
+        e.preventDefault(); //전체 창이 초기화(?)되는 것을 방지
         query=$(frm.query).val();
         page=1;
         getBooks();
