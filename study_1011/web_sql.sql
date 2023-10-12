@@ -17,8 +17,6 @@ values('red','pass','이레드');
 insert into users(uid, upass, uname)
 values('green','pass','최그린');
 
-select * from users;
-
 update users set
 phone='010-1010-2020', address1='인천 서구 서곶로120' where uid='blue';
 update users set
@@ -26,3 +24,19 @@ phone='010-1010-3030', address1='서울 강서구 화곡동' where uid='red';
 update users set
 phone='010-1010-4040', address1='서울 강남구 대치동' where uid='green';
 
+select * from users;
+select * from users where uid='red';
+
+select * from users order by uname;
+
+create table books(
+	bid int auto_increment primary key,
+    title varchar(300) not null,
+    price int default 0,
+    authors varchar(300),
+    publisher varchar(300),
+    regdate datetime default now(),
+    contents text
+);
+
+desc books;

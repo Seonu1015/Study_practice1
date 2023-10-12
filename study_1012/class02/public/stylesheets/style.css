@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbit&display=swap');
+
+* {
+  font-family: 'Orbit', sans-serif;
+}
+
+form span {
+  width: 100px;
+  justify-content: center;
+}
+
+#photo {
+  border-radius: 50%;
+  border: dashed 2px;
+}
