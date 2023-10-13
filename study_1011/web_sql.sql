@@ -36,7 +36,12 @@ create table books(
     authors varchar(300),
     publisher varchar(300),
     regdate datetime default now(),
-    contents text
+    image varchar(300),
+    contents text,
+    isbn varchar(100)
 );
 
+drop table books; -- 테이블 통째로 날아감
+
 desc books;
+select * from books;
