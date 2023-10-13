@@ -45,3 +45,5 @@ drop table books; -- 테이블 통째로 날아감
 
 desc books;
 select * from books;
+
+select count(*) from books;
