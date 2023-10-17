@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연습1</title>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+</head>
+<body>
+    <form name="frm">
+        아이디 : <input name="id">
+        <hr>
+        비밀번호 : <input name="pass" type="password">
+        <hr>
+        <button>가입</button>
+        <input type="button" value="취소">
+    </form>
+    <hr>
+    <div id="list">
+        <h2>red <button>삭제</button></h2>
+        <h2>blue <button>삭제</button></h2>
+    </div>
+</body>
+
+<script>
+    $(frm).on("submit", function(e){
+        e.preventDefault();
+        const id = $(frm.id).val();
+        const pass = $(frm.pass).val();
+
+        if(id=="") {
+            alert("아이디를 입력해주세요!");
+            $(frm.id).focus();
+        } else if(pass=="") {
+            alert("비밀번호를 입력해주세요!");
+            $(frm.pass).focus();
+        } else {
+            if(confirm("가입을 진행하시겠습니까?")) {
+                $("#list").append(`<h2>${id} <button>삭제</button></h2>`);
+                // $("#list").html(`<h2>${id}</h2>`);
+                // $("#list").text(`<h2>${id}</h2>`); <- 출력되는 방식이 다름
+                $(frm.id).val("");
+                $(frm.pass).val("");
+            } 
+        }
+    });
+
+    $("#list").on("click", "button", function() {
+        if(!confirm("삭제하실래요?")) return;
+        const h2 = $(this).parent();
+        h2.remove();
+    });
+</script>
+</html>
