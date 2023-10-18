@@ -74,6 +74,43 @@ desc users;
 
 desc books;
 
+desc favorite;
+
 select * from favorite;
 
-select count(*) from favorite where uid = 'blue' and bid = 127;
+select * from users;
+
+select bid, title from books
+order by bid desc;
+
+insert into favorite(uid, bid) values('red', 127);
+insert into favorite(uid, bid) values('black', 127);
+insert into favorite(uid, bid) values('green', 127);
+insert into favorite(uid, bid) values('blue', 126);
+insert into favorite(uid, bid) values('black', 126);
+
+update favorite set regdate=now() where uid='red' and bid=127;
+
+delete from favorite where bid=126 and uid='blue';
+
+delete from favorite where bid>0;
+
+select count(*) cnt from favorite where uid = 'red' and bid = 127;
+select count(*) fcnt from favorite where bid=126;
+
+select count(*) fcnt,
+(select count(*) cnt from favorite where uid = 'red' and bid = 127) ucnt
+from favorite
+where bid=127;
+
+
+select *,
+(select count(*) from favorite where bid=books.bid) fcnt,
+(select count(*) from favorite where bid=books.bid and uid='red') ucnt
+from books
+where title like '%%' or authors like '%%'
+order by bid desc
+limit 0, 6;
+
+select count(*) fcnt from favorite where bid=127;
+select count(*) ucnt from favorite where bid=127 and uid='red';
