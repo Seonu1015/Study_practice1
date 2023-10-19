@@ -1,0 +1,30 @@
+<!-- Modal -->
+<!--id="modal{{@index}}" : each를 반복할 때마다 index가 생성, 해당 인덱스를 가져와서 지정-->
+<div class="modal fade" id="modal{{@index}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">도서 정보</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-3">
+                    <img src="{{thumbnail}}" width="100%">
+                </div>
+                <div class="col">
+                    <h4>{{title}}({{authors}},{{publisher}})</h4>
+                    <hr>
+                    ISBN : {{isbn}}<br>
+                    가격 : ￦{{fmtPrice price}}({{status}})<br>
+                    <hr>
+                    {{contents}}<br>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
