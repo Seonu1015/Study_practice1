@@ -1,0 +1,93 @@
+<style>
+    .bi-trash {
+        cursor: pointer;
+        font-size: 1.4rem;
+    }
+</style>
+
+<div class="my-5">
+    <h1 class="text-center">장바구니</h1>
+    <div id="div_cart"></div>
+</div>
+<script id="temp_cart" type="x-handlebar-template">
+    <table class="table align-middle">
+        {{#each .}}
+            <tr>
+                <td>{{cid}}</td>
+                <td><img src="{{image}}" width="50px"></td>
+                <td>{{title}}</td>
+                <td>{{fmtprice}}원</td>
+                <td>
+                    <input class="qnt" value="{{qnt}}" size="3" oninput="isNumber(this)">
+                    <button cid="{{cid}}" class="btn-update btn btn-secondary btn-sm">변경</button>
+                </td>
+                <td>총 {{fmt sum}}원</td>
+                <td><i class="bi bi-trash" cid="{{cid}}"></i></td>
+            </tr>
+        {{/each}}
+    </table>
+</script>
+
+<script>
+    Handlebars.registerHelper("fmt", function(sum) {
+        return sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    });
+</script>
+<script>
+    getCart();
+
+    // 수량 변경 버튼을 클릭했을 때
+    $("#div_cart").on("click", ".btn-update", function() {
+        // alert("..");
+        const cid = $(this).attr("cid");
+        const qnt = $(this).parent().find(".qnt").val();
+        if(qnt==$(".qnt").val()) { // 유효성체크
+            $(this).parent().find(".qnt").val(1);
+            return;
+        }
+        // alert(`${cid}번 ${qnt}개`);
+        if(confirm(`수량을 ${qnt}권으로 변경하시겠습니까?`)) {
+            $.ajax({
+                type: "post",
+                url: "/cart/update",
+                data: {cid, qnt},
+                success: function() {
+                    getCart();
+                }
+            });
+        }
+    });
+
+    // 수량에 숫자만 입력 가능!
+    function isNumber(item){
+        item.value=item.value.replace(/[^0-9]/g,'');
+    }
+
+    // 삭제 아이콘을 눌렀을 때,
+    $("#div_cart").on("click", ".bi-trash", function(){
+        const cid = $(this).attr("cid");
+        if(confirm(`${cid}번 도서를 삭제하시겠습니까?`)) {
+            $.ajax({
+                type: "post",
+                url: "/cart/delete",
+                data: {cid},
+                success:function() {
+                    getCart();
+                }
+            });
+        }
+    });
+
+    function getCart() {
+        $.ajax({
+            type: "get",
+            url: "/cart/list.json",
+            data: {uid:sessionStorage.getItem("uid")},
+            success:function(data) {
+                // console.log(data);
+                const temp = Handlebars.compile($("#temp_cart").html());
+                $("#div_cart").html(temp(data));
+            }
+        });
+    }
+</script>
