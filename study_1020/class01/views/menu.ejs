@@ -1,0 +1,65 @@
+<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand mx-3" href="/"><i class="bi bi-book"></i></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/books">Book</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/books/list">List</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/users">User</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/search">Map</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav d-flex">
+                <li class="nav-item" id="login">
+                    <a class="nav-link active" aria-current="page" href="/users/login">LOGIN</a>
+                </li>
+                <li class="nav-item" style="display:none;" id="mypage">
+                    <a class="nav-link active" aria-current="page" href="/users/mypage">uid</a>
+                </li>
+                <li class="nav-item" style="display:none;" id="cart">
+                    <a class="nav-link active" aria-current="page" href="/cart/list">Cart</a>
+                </li>
+                <li class="nav-item" style="display:none;" id="logout">
+                    <a class="nav-link active" aria-current="page" href="/users/logout">LOGOUT</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<script>
+    if(sessionStorage.getItem("uid")) {
+        $("#login, #mypage, #cart, #logout").toggle(); // #login, #mypage, #logout <- or
+        $("#mypage a").html(sessionStorage.getItem("uid")+"님"); // #mypage a <- and
+    }
+
+    $("#logout").on("click", "a", function(e) {
+        e.preventDefault();
+        if(confirm("정말로 로그아웃하시겠습니까?")) {
+            sessionStorage.clear();
+            location.href="/";
+        }            
+    });
+
+    $("#mypage").on("click", "a", function(e) {
+        e.preventDefault();
+        // 아이디 같은 경우는 파라미터로 많이 보내고, 검색이나 페이지는 쿼리로 많이 작성한다.
+        // location.href="/users/mypage/" + sessionStorage.getItem("uid"); <- 파라미터로 작성한 경우
+        // 아래는 쿼리로 작성한 경우 : 라우터의 경로도 이에 맞춰서 수정해줘야 한다.
+        location.href="/users/mypage?uid=" + sessionStorage.getItem("uid");
+    });
+</script>
