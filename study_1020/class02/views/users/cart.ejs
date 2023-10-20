@@ -1,0 +1,185 @@
+<style>
+    .bi-trash {
+        cursor: pointer;
+        font-size: 1.4rem;
+    }
+</style>
+
+<div class="my-5">
+    <h1 class="text-center">장바구니</h1>
+    <div id="div_cart"></div>
+    <div class="text-center">
+        <button id="btn-order" class="btn btn-primary px-5">주문하기</button>
+    </div>
+</div>
+<script id="temp_cart" type="x-handlebar-template">
+    <div class="row">
+        <div class="col ms-2">
+            <input id="all" type="checkbox">
+            <span class="ms-2">전체선택</span>
+        </div>
+        <div class="col text-end">
+            <button class="btn btn-danger btn-sm btn-delete">선택상품삭제</button>
+        </div>
+    </div>
+    <table class="table align-middle mt-3">
+        <tr class="text-center table-secondary">
+            <th colspan=4>상품명</th>
+            <th>가격</th>
+            <th>수량</th>
+            <th>합계</th>
+            <th>삭제</th>
+        </tr>
+        {{#each .}}
+            <tr>
+                <td><input cid="{{cid}}" class="chk" type="checkbox"></td>
+                <td>[{{cid}}] {{bid}}</td>
+                <td><img src="{{image}}" width="50px"></td>
+                <td>{{title}}</td>
+                <td>{{fmtprice}}원</td>
+                <td>
+                    <input class="qnt" value="{{qnt}}" size="3" oninput="isNumber(this)">
+                    <button cid="{{cid}}" class="btn-update btn btn-secondary btn-sm">변경</button>
+                </td>
+                <td>{{fmt sum}}원</td>
+                <td><i class="bi bi-trash" cid="{{cid}}"></i></td>
+            </tr>
+        {{/each}}
+        <tr>
+            <td colspan=8 class="text-end">총 <span id="sum">0</span>원</td>
+        </tr>
+    </table>
+</script>
+
+<script>
+    Handlebars.registerHelper("fmt", function (sum) {
+        return sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    });
+</script>
+
+<script>
+    getCart();
+
+    // 주문하기 버튼을 클릭한 경우
+    $("#btn-order").on("click", function() {
+        const cnt = $("#div_cart .chk:checked").length;
+        if(cnt == 0) {
+            alert("선택한 상품이 없습니다.");
+        } else {
+            let cart = [];
+            $("#div_cart .chk:checked").each(function() {
+                const cid = $(this).attr("cid");
+                cart.push(cid);
+            });
+            location.href="/order/insert?cart=" + cart.join();
+        }
+
+    });
+
+    // 선택상품삭제 버튼을 클릭한 경우
+    $("#div_cart").on("click", ".btn-delete", function () {
+        const chk = $("#div_cart .chk:checked").length;
+        if (chk == 0) {
+            alert("삭제할 상품을 하나 이상 선택해주세요!");
+            return;
+        }
+
+        if (!confirm(`${chk}개 상품을 삭제하시겠습니까?`)) return;
+
+        $("#div_cart .chk:checked").each(function () {
+            // alert("..");
+            const cid = $(this).attr("cid");
+            // alert(cid);
+
+            $.ajax({
+                type: "post",
+                url: "/cart/delete",
+                data: { cid },
+                success: function () {
+                }
+            });
+            getCart();
+        });
+    });
+
+    // 전체선택 체크박스를 클릭한 경우
+    $("#div_cart").on("click", "#all", function () {
+        if ($(this).is(":checked")) {
+            $("#div_cart .chk").prop("checked", true);
+        } else {
+            $("#div_cart .chk").prop("checked", false);
+        }
+    });
+
+    // 각 행의 체크박스를 클릭한 경우
+    $("#div_cart").on("click", ".chk", function () {
+        const all = $("#div_cart .chk").length;
+        const chk = $("#div_cart .chk:checked").length;
+        if (all == chk) {
+            $("#div_cart #all").prop("checked", true);
+        } else {
+            $("#div_cart #all").prop("checked", false);
+        }
+    });
+
+    // 수량 변경 버튼을 클릭했을 때
+    $("#div_cart").on("click", ".btn-update", function () {
+        // alert("..");
+        const cid = $(this).attr("cid");
+        const qnt = $(this).parent().find(".qnt").val();
+        if (qnt == $(".qnt").val()) { // 유효성체크
+            $(this).parent().find(".qnt").val(1);
+            return;
+        }
+        // alert(`${cid}번 ${qnt}개`);
+        if (confirm(`수량을 ${qnt}권으로 변경하시겠습니까?`)) {
+            $.ajax({
+                type: "post",
+                url: "/cart/update",
+                data: { cid, qnt },
+                success: function () {
+                    getCart();
+                }
+            });
+        }
+    });
+
+    // 수량에 숫자만 입력 가능!
+    function isNumber(item) {
+        item.value = item.value.replace(/[^0-9]/g, '');
+    }
+
+    // 삭제 아이콘을 눌렀을 때,
+    $("#div_cart").on("click", ".bi-trash", function () {
+        const cid = $(this).attr("cid");
+        if (confirm(`${cid}번 도서를 삭제하시겠습니까?`)) {
+            $.ajax({
+                type: "post",
+                url: "/cart/delete",
+                data: { cid },
+                success: function () {
+                    getCart();
+                }
+            });
+        }
+    });
+
+    function getCart() {
+        $.ajax({
+            type: "get",
+            url: "/cart/list.json",
+            data: { uid: sessionStorage.getItem("uid") },
+            success: function (data) {
+                // console.log(data);
+                const temp = Handlebars.compile($("#temp_cart").html());
+                $("#div_cart").html(temp(data));
+
+                let sum=0;
+                data.forEach(item=> {
+                    sum += item.sum;
+                });
+                $("#sum").html(sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+            }
+        });
+    }
+</script>
