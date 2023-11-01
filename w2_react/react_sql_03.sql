@@ -57,3 +57,5 @@ order by r.rid desc
 limit 0, 3;
 
 call review_list(121,2,3);
+
+desc review;

@@ -1,0 +1,92 @@
+.App {
+    margin: 50px;
+}
+
+.count {
+    width: 500px;
+    border: 1px dashed gray;
+    padding: 20px;
+    padding-bottom: 2.5rem;
+    text-align: center;
+}
+
+.button {
+    font-size: 30px;
+    background-color: #292929;
+    color: whitesmoke;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    padding: 5px 10px;
+}
+
+.text {
+    margin: 0px 20px;
+    font-size: 30px;
+}
+
+.input-group span {
+    width: 150px;
+    justify-content: center;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.ellipsis2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.home {
+    font-size: 1.5rem;
+    color: white;
+    margin-right: 20px;
+}
+
+.navbar-nav .active {
+    color: white;
+}
+
+.navbar-nav a {
+    color: gray;
+    margin-right: 20px;
+}
+
+.photo {
+    border-radius: 50%;
+    border-style: dashed;
+    cursor: pointer;
+}
+
+.heart {
+    cursor: pointer;
+    color: palevioletred;
+}
+
+.message {
+    cursor: pointer;
+    color: #4d4d4d;
+}
+
+.rcnt {
+    font-size: 0.8rem;
+    color: #4d4d4d;
+}
+
+.fcnt {
+    font-size: 0.8rem;
+    color: #4d4d4d;
+}
