@@ -59,3 +59,13 @@ limit 0, 3;
 call review_list(121,2,3);
 
 desc review;
+
+desc cart;
+
+select * from cart
+where regdate <= date_add(now(), interval-7 day);
+
+delete from cart
+where regdate <= date_add(now(), interval-7 day) and cid > 0;
+
+select * from cart;
