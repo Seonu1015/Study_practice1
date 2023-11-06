@@ -1,0 +1,29 @@
+CREATE DEFINER=`web`@`%` PROCEDURE `purchase_all`(
+    in i_page int,
+    in i_size int,
+    in i_query varchar(100)
+)
+BEGIN
+	declare v_start int;
+    declare v_query varchar(100);
+
+    set v_start = (i_page-1) * i_size;
+    set v_query = concat('%', i_query, '%');
+
+	select *, date_format(regdate, '%Y-%m-%d %T') fmtdate, format(sum, 0) fmtsum,
+	case
+		when(status = 0) then '결제 확인 중'
+		when(status = 1) then '결제 완료'
+		when(status = 2) then '배송 준비 즁'
+		when(status = 3) then '배송 중'
+		when(status = 4) then '배송 완료'
+        when(status = 4) then '주문 완료'
+	end as str_result
+	from purchase
+    where uid like v_query or rname like v_query or rphone like v_query or raddress1 like v_query
+	order by pid desc
+	limit v_start, i_size;
+    
+    select count(*) total from purchase;
+END
+
