@@ -1,0 +1,52 @@
+<div class="my-5">
+	<h1 class="text-center mb-3">게시글정보</h1>
+	<div class="text-end mb-3">
+		<button id="btn-update" class="btn btn-success btn-sm px-3">수정</button>
+		<button id="btn-delete" class="btn btn-danger btn-sm px-3 ms-1">삭제</button>
+	</div>
+	<div id="div_post"></div>
+</div>
+
+<script id="temp_post" type="x-handlebars-template">
+	<div class="card">
+		<div class="card-body">
+			<h5>[{{pid}}] {{title}}</h5>
+			<hr>
+			<p>{{body}}</p>
+		</div>
+		<div class="card-footer">
+			<div>작성자 {{uname}} ({{writer}})</div>
+			<div>작성일 {{fmtdate}}</div>
+		</div>
+	</div>
+</script>
+
+<script>
+	const pid = "[[${pid}]]";
+	getPost();
+	
+	$("#btn-delete").on("click", function() {
+		if(!confirm(`${pid}번 게시글을 삭제하시겠습니까?`)) return;
+		$.ajax({
+			type:"post",
+			url:"/posts/delete",
+			data:{pid},
+			success: function() {
+				alert("게시글이 삭제되었습니다.");
+				location.href="/posts";
+			}
+		});
+	});
+	
+	function getPost() {
+		$.ajax({
+			type: "get",
+			url: "/posts/read.json",
+			data: {pid},
+			success: function (data) {
+				const temp = Handlebars.compile($("#temp_post").html());
+				$("#div_post").html(temp(data));
+			}
+		});
+	}
+</script>

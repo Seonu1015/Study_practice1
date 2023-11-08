@@ -1,0 +1,35 @@
+<div class="my-5">
+   <h1 class="text-center mb-5"> 글쓰기 </h1>
+   <form name="frm">
+      <input name="title" class="form-control mb-2" placeholder="제목을 입력하세용">
+      <textarea name="body" class="form-control" rows="10" placeholder="내용을 입력하세용"></textarea>
+      <div class="text-end my-5">
+         <button type="submit" class="btn btn-warning sm me-2 px-5"> 저장 </button>
+         <button type="reset" class="btn btn-secondary sm  px-5"> 취소 </button>
+      </div>
+   </form>
+</div>
+
+<script>
+   $(frm).on("submit", function(e) {
+      e.preventDefault();
+      const title = $(frm.title).val();
+      const body = $(frm.body).val();
+      const uid = "black";
+      if(title=="") {
+         alert("제목을 입력하세용!!");
+         $(frm.title).focus();
+         return;
+      }
+      if(confirm("저장하시겠슴까?")){
+         $.ajax({
+            type: "post",
+            url: "/posts/insert",
+            data: {title, body, writer: uid},
+            success: function() {
+               location.href = "/posts";
+            }
+         });
+      };
+   });
+</script>

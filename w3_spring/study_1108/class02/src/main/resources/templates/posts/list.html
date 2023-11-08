@@ -1,0 +1,35 @@
+<div class="my-5">
+	<h1 class="text-center mb-3">Post List</h1>
+	<div class="text-end mb-3">
+		<a href="/posts/insert" class="btn btn-primary px-5 btn-sm">글쓰기</a>
+	</div>
+	<div id="div_posts"></div>
+</div>
+
+<script id="temp_posts" type="x-handlebars-template">
+	<table class="table text-center">
+	{{#each .}}
+		<tr>
+			<td width="5%">{{pid}}</td>
+			<td class="text-start"><a href="/posts/read?pid={{pid}}">{{title}}</a></td>
+			<td width="15%">{{uname}} ({{writer}})</td>
+			<td width="25%">{{fmtdate}}</td>
+		</tr>
+	{{/each}}
+	</table>
+</script>
+
+<script>
+	getPosts();
+	function getPosts() {
+		$.ajax({
+			type: "get",
+			url: "/posts/list.json",
+			success: function (data) {
+				//console.log(data);
+				const temp = Handlebars.compile($("#temp_posts").html());
+				$("#div_posts").html(temp(data));
+			}
+		})
+	}
+</script>
