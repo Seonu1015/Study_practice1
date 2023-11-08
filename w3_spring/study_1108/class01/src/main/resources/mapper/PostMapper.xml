@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.PostMapper">
+	<select id="list" resultType="com.example.domain.PostVO">
+		select * from posts order by pid desc;
+	</select>
+	<insert id="insert">
+		insert into posts (title, body, writer) values(#{title}, #{body},
+		#{writer});
+	</insert>
+	<update id="update" >
+		update posts set title = #{title}, body = #{body}, regdate = now() where pid = #{pid};
+	</update>
+	<select id="read" resultType="com.example.domain.PostVO">
+		select * from posts where pid = #{pid};
+	</select>
+	<delete id="delete">
+		delete from posts where pid = #{pid};
+	</delete>
+</mapper>
