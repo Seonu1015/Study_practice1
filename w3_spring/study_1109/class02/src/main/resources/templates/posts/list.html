@@ -1,0 +1,38 @@
+<div class="my-5">
+	<h1 class="text-center mb-3">게시글</h1>
+	
+	<div class="text-end mb-2">
+		<a href="/posts/insert" class="btn btn-primary btn-sm px-3">작성</a>
+	</div>
+	<div id="div_posts"></div>
+</div>
+
+<script id="temp_posts" type="x-handlebars-template">
+	<table class="table">
+		{{#each .}}
+			<tr>
+				<td width="5%">{{pid}}</td>
+				<td class="text-start">
+					<a class="link-offset-2 link-underline link-underline-opacity-0" href="/posts/read?pid={{pid}}"><div class="ellipsis">{{title}}</div></a>
+				</td>
+				<td width="15%">{{uname}} ({{writer}})</td>
+				<td width="25%">{{fmtdate}}</td>
+			</tr>
+		{{/each}}
+	</table>
+</script>
+
+<script>
+	getPosts();
+	function getPosts() {
+		$.ajax({
+			type: "get",
+			url: "/posts/list.json",
+			success: function (data) {
+				//console.log(data);
+				const temp = Handlebars.compile($("#temp_posts").html());
+				$("#div_posts").html(temp(data));
+			}
+		})
+	}
+</script>
