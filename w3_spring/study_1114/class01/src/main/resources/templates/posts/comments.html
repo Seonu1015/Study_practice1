@@ -1,0 +1,150 @@
+<style>
+	.hidden {
+		display: none;
+	}
+</style>
+
+<div class="my-5">
+	<h1 class="text-center mb-5">댓글관리</h1>
+	<div id="btn-write" class="mb-5">
+		<button class="btn btn-primary w-100">댓글작성</button>
+	</div>
+	<div id="div-write" class="row mb-5" style="display: none;">
+		<div class="col-11">
+			<textarea id="txt-body" class="form-control" rows="5" placeholder="댓글을 입력하세요."></textarea>
+		</div>
+		<div class="col">
+			<button id="btn-insert" class="btn btn-outline-secondary w-100 h-100">등록</button>
+		</div>
+	</div>
+	<div id="div_comments"></div>
+	<div id="pagination" class="pagination justify-content-center mt-5"></div>
+</div>
+
+<script id="temp_comments" type="x-handlebars-template">
+   {{#each .}}
+      <div class="row">
+         <div class="col-2 text-center">
+            <img src="{{fn_photo photo}}" width="50" class="photo"><br/>
+            <small>{{uname}}</small>
+         </div>
+         <div class="col">
+            <div>{{fmtdate}}</div>
+            {{body}}
+         </div>
+         <div class="col-1 text-end {{fn_hidden writer}}">
+			 <button class="btn btn-outline-primary btn-sm mb-1 h-50 w-100">수정</button>
+			 <button class="btn-delete btn btn-outline-danger btn-sm h-50 w-100" cid="{{cid}}">삭제</button>
+		 </div>
+      </div>
+      <hr>
+   {{/each}}
+</script>
+
+<script>
+	Handlebars.registerHelper("fn_hidden", function(writer){
+		if(sessionStorage.getItem("uid")!=writer) {
+			return "hidden";
+		}
+	});
+	Handlebars.registerHelper("fn_photo", function (photo) {
+		if (photo) {
+			return "/display?file=" + photo;
+		} else {
+			return "http://via.placeholder.com/100x115";
+		}
+	})
+</script>
+
+<script>
+	let page = 1;
+	let size = 3;
+	const post_id = "[[${param.pid}]]";
+
+	getTotal();
+	
+	if(sessionStorage.getItem("uid")) {
+		$("#btn-write, #div-write").toggle();
+	}
+	
+	$("#div_comments").on("click", ".btn-delete", function(){
+		const cid = $(this).attr("cid");
+		if(confirm(`${cid}번 댓글을 삭제하시겠습니까?`)) {
+			$.ajax({
+				type:"get",
+				url:"/comments/delete",
+				data: {cid},
+				success: function() {
+					getTotal();
+				}
+			});
+		}
+	});
+	
+	$("#btn-insert").on("click", function() {
+		const writer = sessionStorage.getItem("uid");
+		const body = $("#txt-body").val();
+		const pid = post_id;
+		if (body == "") {
+			alert("댓글을 입력하세요.");
+			$("#txt-body").focus();
+			return;
+		}
+		// alert(`${writer}\n${body}\n${pid}`);
+		$.ajax({
+			type: "post",
+			url: "/comments/insert",
+			data: JSON.stringify({pid, body, writer}),
+			contentType:"application/JSON",
+			success : function() {
+				alert("댓글이 등록되었습니다.");
+				getTotal();
+				$("#txt-body").val("");
+			}
+		});
+	});
+	
+	$("#btn-write").on("click", function() {
+		sessionStorage.setItem("target", "/posts/read?pid=" + post_id);
+		location.href="/users/login";
+	});
+	
+	function getTotal() {
+		$.ajax({
+			type: "get",
+			url: "/comments/total",
+			data: {pid: post_id},
+			success: function (data) {
+				const totalPages = Math.ceil(data / size);
+				$("#pagination").twbsPagination("changeTotalPages", totalPages, page)
+			}
+		})
+	}
+
+	function getComments() {
+		$.ajax({
+			type: "get",
+			url: "/comments/list.json",
+			data: {page, size, pid: post_id},
+			success: function (data) {
+				const temp = Handlebars.compile($("#temp_comments").html());
+				$("#div_comments").html(temp(data));
+			}
+		})
+	}
+
+	$('#pagination').twbsPagination({
+		totalPages: 10, //총 페이지 번호 수
+		visiblePages: 5, // 하단에서 한 번에 보여 지는 페이지 번호 수
+		startPage: 1, // 시작 시 표시되는 현재 페이지
+		initiateStartPageClick: false, // 플러그인이 시작 시 페이지 버튼 클릭 여부 (default : true) 
+		first: '<<', // 페이지네이션 버튼 중 처음으로 돌아가는 버튼에 쓰여 있는 텍스트
+		prev: '<', // 이전 페이지 버튼에 쓰여 있는 텍스트
+		next: '>', // 다음 페이지 버튼에 쓰여 있는 텍스트
+		last: '>>', // 페이지네이션 버튼 중 마지막으로 가는 버튼에 쓰여 있는 텍스트
+		onPageClick: function (event, clickPage) {
+			page = clickPage;
+			getComments();
+		}
+	});
+</script>
