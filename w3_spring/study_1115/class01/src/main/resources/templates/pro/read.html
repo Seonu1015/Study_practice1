@@ -1,0 +1,31 @@
+<div class="my-5">
+	<h1 class="text-center mb-5">교수 정보</h1>
+	<div id="div_pro" class="row justify-content-center"></div>
+</div>
+
+<script id="temp_pro" type="x-handlebars-template">
+	<div class="col-md-6">
+		<div class="card p-3">
+			<div>교수이름: {{pname}} ( code : {{pcode}} )</div><hr>
+			<div>교수학과: {{dept}}</div><hr>
+			<div>교수직급: {{title}} ({{fmtdate}})</div><hr>
+			<a href="/pro/update?pcode={{pcode}}" class="btn btn-primary">정보수정</a>
+		</div>
+	</div>
+</script>
+
+<script>
+	const pcode = "[[${param.pcode}]]";
+
+	$(window).on("load", function () {
+		$.ajax({
+			type: "get",
+			url: "/pro/read.json",
+			data: {pcode},
+			success: function (data) {
+				const temp = Handlebars.compile($("#temp_pro").html());
+				$("#div_pro").html(temp(data));
+			}
+		});
+	});
+</script>
