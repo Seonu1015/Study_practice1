@@ -1,0 +1,67 @@
+<div class="my-5">
+	<h1 class="text-center mb-5">강좌정보</h1>
+	<nav>
+		<div class="nav nav-tabs" id="nav-tab" role="tablist">
+			<button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
+				role="tab" aria-controls="nav-home" aria-selected="true">강좌정보</button>
+			<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button"
+				role="tab" aria-controls="nav-profile" aria-selected="false">수강학생</button>
+		</div>
+	</nav>
+	<div class="tab-content" id="nav-tabContent">
+		<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+			<div id="div_cou" class="row justify-content-center mt-5"></div>
+		</div>
+		<div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+			<div id="div_enroll" class="mt-5"></div>
+		</div>
+	</div>
+</div>
+<script id="temp_cou" type="x-handlebars-template">
+	<div class="col">
+		<div class="card p-3">
+			<div>강좌이름: {{lname}} ({{lcode}})</div><hr>
+			<div>수강인원: {{persons}}명 / {{capacity}}명</div><hr>
+			<div>지도교수: {{pname}} ({{instructor}})</div><hr>
+			<div class="text-center">
+				<a href="/cou/update?lcode={{lcode}}" class="btn btn-primary px-5">정보수정</a>
+			</div>	
+		</div>	
+	</div>	
+</script>
+<script id="temp_enroll" type="x-handlebars-template">
+	<table class="table">
+		{{#each .}}
+		<tr>
+			<td>{{sname}}({{scode}})</td>
+			<td>{{dept}} ({{year}})</td>
+			<td>{{edate}}</td>
+			<td>{{grade}}</td>
+		</tr>	
+		{{/each}}
+	</table>	
+</script>
+
+<script>
+	const lcode="[[${param.lcode}]]";
+	$.ajax({
+		type:"get",
+		url:"/cou/read.json",
+		data:{lcode},
+		success:function(data){
+			//console.log(data);
+			const temp=Handlebars.compile($("#temp_cou").html());
+			$("#div_cou").html(temp(data));
+		}
+	});
+	
+	$.ajax({
+		type:"get",
+		url:"/cou/enroll.json",
+		data:{lcode},
+		success:function(data){
+			const temp=Handlebars.compile($("#temp_enroll").html());
+			$("#div_enroll").html(temp(data));
+		}
+	});
+</script>

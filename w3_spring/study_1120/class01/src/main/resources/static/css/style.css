@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+@font-face {
+    font-family: 'OAGothic-ExtraBold';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/OAGothic-ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+}
+
+
+* {
+    font-family: 'OAGothic-ExtraBold';
+}
+
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.input-group-text {
+	width: 120px;
+	justify-content: center;
+}
+
+.photo {
+	border-radius: 50%;
+	border: 1px solid gray;
+	cursor: pointer;
+}
