@@ -1,0 +1,158 @@
+<div class="my-5">
+	<h1 class="text-center mb-5">학생정보</h1>
+	<nav>
+		<div class="nav nav-tabs" id="nav-tab" role="tablist">
+			<button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
+				type="button" role="tab" aria-controls="nav-home" aria-selected="true">학생정보</button>
+			<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+				type="button" role="tab" aria-controls="nav-profile" aria-selected="false">수강신청</button>
+		</div>
+	</nav>
+	<div class="tab-content" id="nav-tabContent">
+		<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab"
+			tabindex="0">
+			<div id="div_stu" class="row justify-content-center mt-5"></div>
+		</div>
+		<div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+			<div class="card p-3 mt-3">
+				<div class="input-group">
+					<span class="input-group-text">강좌</span>
+					<select id="div_cou" class="form-select"></select>
+					<button id="btn-insert" class="btn btn-primary">수강신청</button>
+				</div>
+			</div>
+			<div id="div_enroll" class="mt-3"></div>
+		</div>
+	</div>
+</div>
+
+<script id="temp_cou" type="x-handlebars-template">
+	{{#each list}}
+		<option value="{{lcode}}" {{fn_persons persons capacity}}>{{lname}} | {{pname}} | {{room}} | {{persons}}명 / {{capacity}}명</option>
+	{{/each}}	
+</script>
+
+<script id="temp_enroll" type="x-handlebars-template">
+	<table class="table">
+		{{#each .}}
+			<tr>
+				<td>{{lname}}({{lcode}})</td>
+				<td>{{hours}}시 ({{room}})</td>
+				<td>{{pname}}({{instructor}})</td>
+				<td class="text-end">{{persons}}/{{capacity}}</td>
+				<td class="text-end">{{grade}}</td>
+				<td class="text-end"><button class="btn-delete btn btn-danger btn-sm" lcode="{{lcode}}">취소</button></td>
+			</tr>
+		{{/each}}
+	</table>
+</script>
+
+<script>
+	Handlebars.registerHelper("fn_persons", function(p, c) {
+		if(p==c) return "disabled";
+	});
+</script>
+
+<script id="temp_stu" type="x-handlebars-template">
+	<div class="col">
+		<div class="card p-3">
+			<div>학생이름: {{sname}} ({{scode}})</div><hr>
+			<div>학생학과: {{dept}} ({{fmtdate}})</div><hr>
+			<div>지도교수: {{pname}} ({{advisor}})</div><hr>
+			<div class="text-center">
+				<a href="/stu/update?scode={{scode}}" class="btn btn-primary px-5">정보수정</a>
+			</div>	
+		</div>	
+	</div>	
+</script>
+
+<script>
+	const scode = "[[${param.scode}]]";
+	$("#nav-profile-tab").click();
+
+	$(window).on("load", function () {
+		$.ajax({
+			type: "get",
+			url: "/stu/read.json",
+			data: {scode},
+			success: function (data) {
+				const temp = Handlebars.compile($("#temp_stu").html());
+				$("#div_stu").html(temp(data));
+			}
+		});
+	});
+	
+	// 수강신청 버튼을 누른 경우
+	$("#btn-insert").on("click", function(){
+		const lcode = $("#div_cou").val();
+		$.ajax({
+			type: "get",
+			url: "/enroll/read.json",
+			data: {lcode, scode},
+			success: function(data) {
+				if(data) {
+					alert("이미 신청한 강좌입니다.");
+				} else {
+					if(confirm(`${scode}번 학생 : ${lcode}번 강좌 ▷ 강좌를 신청하시겠습니까?`)) {
+						$.ajax({
+							type:"post",
+							url: "/enroll/insert",
+							data: JSON.stringify({lcode, scode}),
+							contentType: "application/JSON",
+							success: function() {
+								alert("수강신청완료!");
+								getEnroll();
+								getCou();
+							}
+						});
+					}
+				}
+			}
+		});
+	});
+	
+	// 전체 강좌 목록
+	getCou();
+	function getCou() {
+		$.ajax({
+			type: "get",
+			url: "/cou/list.json",
+			data: {page:1, key:"lcode", query:"", size:100},
+			success: function(data) {
+				const temp = Handlebars.compile($("#temp_cou").html());
+				$("#div_cou").html(temp(data));
+			}
+		});
+	}
+	
+	//취소버튼을 누른 경우
+	$("#div_enroll").on("click", ".btn-delete", function(){
+		const lcode = $(this).attr("lcode");
+		if(confirm(`${scode}번 학생 : ${lcode}번 강좌 ▷ 수강 취소하시겠습니까?`)) {
+			$.ajax({
+				type: "post",
+				url: "/enroll/delete",
+				data: JSON.stringify({lcode, scode}),
+				contentType: "application/JSON",
+				success: function() {
+					alert("수강취소완료!");
+					getEnroll();
+				}
+			});
+		}
+	});
+
+	// 수강신청목록
+	getEnroll();
+	function getEnroll() {
+		$.ajax({
+			type: "get",
+			url: "/stu/enroll.json",
+			data: {scode},
+			success: function (data) {
+				const temp = Handlebars.compile($("#temp_enroll").html());
+				$("#div_enroll").html(temp(data));
+			}
+		});
+	}
+</script>

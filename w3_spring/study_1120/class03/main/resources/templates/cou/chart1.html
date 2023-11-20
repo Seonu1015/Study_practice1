@@ -1,0 +1,46 @@
+<div class="row my-5">
+	<div class="col">
+		<h1 class="text-center mb-5" id="title"></h1>
+		<div id="chart" style="width:100%; height: 250%;"></div>
+	</div>
+</div>
+
+<script>
+
+	$("#title").html('강좌별 평균 점수');
+	
+	getData();
+	function getData() {
+		$.ajax({
+			type: "get",
+			url: "/cou/graph.json",
+			success: function (data) {
+				let rows=[];
+				rows.push(['강좌명', '평균점수']);
+				data.forEach(c => {
+					rows.push([`${c.lname} (${c.lcode})`, c.avg]);
+				});
+				barChart(rows);
+			}
+		});
+	}
+</script>
+
+<script type="text/javascript">
+	function barChart(rows) {
+		google.charts.load('current', {'packages': ['bar']});
+		google.charts.setOnLoadCallback(drawChart);
+
+		function drawChart() {
+			var data = google.visualization.arrayToDataTable(rows);
+
+			var options = {
+				bars: 'horizontal'
+			};
+
+			var chart = new google.charts.Bar(document.getElementById('chart'));
+
+			chart.draw(data, google.charts.Bar.convertOptions(options));
+		}
+	}
+</script>

@@ -1,0 +1,166 @@
+<div class="my-5">
+	<h1 class="text-center mb-5">강좌정보</h1>
+	<nav>
+		<div class="nav nav-tabs" id="nav-tab" role="tablist">
+			<button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
+				type="button" role="tab" aria-controls="nav-home" aria-selected="true">강좌정보</button>
+			<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+				type="button" role="tab" aria-controls="nav-profile" aria-selected="false">수강학생</button>
+			<button class="nav-link" id="nav-graph-tab" data-bs-toggle="tab" data-bs-target="#nav-graph" type="button"
+					role="tab" aria-controls="nav-graph" aria-selected="false">그래프</button>
+		</div>
+	</nav>
+	<div class="tab-content" id="nav-tabContent">
+		<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab"
+			tabindex="0">
+			<div id="div_cou" class="row justify-content-center mt-5"></div>
+		</div>
+		<div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+			<div id="div_enroll" class="mt-5"></div>
+		</div>
+		<div class="tab-pane fade" id="nav-graph" role="tabpanel" aria-labelledby="nav-graph-tab" tabindex="0">
+			<div th:include="cou/chart.html"></div>
+		</div>
+	</div>
+</div>
+
+<script id="temp_cou" type="x-handlebars-template">
+	<div class="col">
+		<div class="card p-3">
+			<div>강좌이름: {{lname}} ({{lcode}})</div><hr>
+			<div>수강인원: {{persons}}명 / {{capacity}}명</div><hr>
+			<div>지도교수: {{pname}} ({{instructor}})</div><hr>
+			<div class="text-center">
+				<a href="/cou/update?lcode={{lcode}}" class="btn btn-primary px-5">정보수정</a>
+			</div>	
+		</div>	
+	</div>	
+</script>
+
+<script id="temp_enroll" type="x-handlebars-template">
+	<table class="table align-content-middle">
+		<tr>
+			<td><input id="all" type="checkbox"> <span>전체</span></td>
+			<td class="text-end" colspan="4">
+				<button class="btn btn-success px-4" id="btn-update">선택수정</button>
+			</td>
+		</tr>
+		{{#each .}}
+		<tr class="text-center" scode="{{scode}}">
+			<td class="text-start"><input class="chk" type="checkbox"></td>
+			<td>{{sname}}({{scode}})</td>
+			<td>{{dept}} ({{year}})</td>
+			<td>{{edate}}</td>
+			<td class="input-group text-end justify-content-end">
+				<input class="grade input-group-text text-end" value="{{grade}}" type="number">
+				<button class="btn-update btn btn-primary">수정</button>
+			</td>
+		</tr>	
+		{{/each}}
+	</table>	
+</script>
+
+<script>
+	let lcode = "[[${param.lcode}]]";
+	const tab = "[[${param.tab}]]";
+	
+	if(tab == 2) {
+		$("#nav-profile-tab").click();
+	}
+
+	// 전체선택 박스를 체크한 경우
+	$("#div_enroll").on("click", "#all", function () {
+		if ($(this).is(":checked")) {
+			$("#div_enroll .chk").prop("checked", true);
+		} else {
+			$("#div_enroll .chk").prop("checked", false);
+		}
+	});
+
+	// 각 행의 체크박스를 클릭한 경우
+	$("#div_enroll").on("click", ".chk", function () {
+		const all = $("#div_enroll .chk").length;
+		const chk = $("#div_enroll .chk:checked").length;
+
+		if (all == chk) {
+			$("#div_enroll #all").prop("checked", true);
+		} else {
+			$("#div_enroll #all").prop("checked", false);
+		}
+	});
+
+	// 선택수정 버튼을 클릭한 경우
+	$("#div_enroll").on("click", "#btn-update", function () {
+		const chk = $("#div_enroll .chk:checked").length;
+		if (chk == 0) {
+			alert("수정할 학생을 선택하세요!");
+		} else {
+			if (confirm(`${chk}명 학생의 점수를 수정하시겠습니까?`)) {
+				// 선택된 학생의 점수 수정
+				$("#div_enroll .chk:checked").each(function () {
+					const tr = $(this).parent().parent();
+					const scode = tr.attr("scode");
+					const grade = tr.find(".grade").val();
+					//alert(scode + ":" + grade);
+					$.ajax({
+						type: "post",
+						url: "/enroll/grade",
+						data: JSON.stringify({lcode, scode, grade}),
+						contentType: "application/JSON",
+						success: function () {
+							//alert("점수 수정 완료!");
+							//getEnroll();
+						}
+					});
+				});
+				alert("점수 수정 완료!");
+				getEnroll();
+			}
+		}
+	});
+
+	$("#div_enroll").on("click", ".btn-update", function () {
+		const tr = $(this).parent().parent();
+		const scode = tr.attr("scode");
+		const grade = tr.find(".grade").val();
+
+		//alert(`${lcode}\n${scode}\n${grade}`);
+
+		if (confirm(`${scode} 학생의 점수를 ${grade}점으로 수정하시겠습니까?`)) {
+			$.ajax({
+				type: "post",
+				url: "/enroll/grade",
+				data: JSON.stringify({lcode, scode, grade}),
+				contentType: "application/JSON",
+				success: function () {
+					alert("점수 수정 완료!");
+					getEnroll();
+				}
+			});
+		}
+	});
+
+	getEnroll();
+	function getEnroll() {
+		$.ajax({
+			type: "get",
+			url: "/cou/read.json",
+			data: {lcode},
+			success: function (data) {
+				//console.log(data);
+				const temp = Handlebars.compile($("#temp_cou").html());
+				$("#div_cou").html(temp(data));
+			}
+		});
+	}
+
+	$.ajax({
+		type: "get",
+		url: "/cou/enroll.json",
+		data: {lcode},
+		success: function (data) {
+			const temp = Handlebars.compile($("#temp_enroll").html());
+			$("#div_enroll").html(temp(data));
+		}
+	});
+</script>
