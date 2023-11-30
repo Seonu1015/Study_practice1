@@ -202,4 +202,27 @@ from purchase;
 
 update purchase set status=1 where oid='6056b492-de9c-427f-a';
 
-select * from view_purchase;
+select * from view_purchase
+where status like '%%';
+
+insert into users(uid, upass, uname)
+values('admin', 'pass', '관리자');
+
+update users set address1='서울 금천구 가산디지털1로 2(우림라이온스밸리2차)', address2='A동 1104호' where uid='sky';
+
+alter table shop add column content text;
+
+desc shop;
+
+select * from shop where pid=61;
+
+select r.pid, title, count(*) as count
+from review r, shop s
+where r.pid = s.pid
+group by r.pid
+order by count desc;
+
+select viewcnt, pid, title
+from shop
+where viewcnt>10
+order by viewcnt desc;
