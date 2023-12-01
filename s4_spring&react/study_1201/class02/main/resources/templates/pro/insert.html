@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+	<h1>교수등록</h1>
+	<form name="frm">
+		교번 : <input name="pcode"><br>
+		이름 : <input name="pname"><br>
+		학과 : <input name="dept"><br><br>
+		<button type="submit">등록</button>
+		<button type="reset">취소</button>
+	</form>
+</body>
+
+<script>
+	$(frm).on("submit", function(e) {
+		e.preventDefault();
+		const data = {pcode:$(frm.pcode).val(), pname:$(frm.pname).val(), dept:$(frm.dept).val()};
+		
+		if(confirm("등록하시겠습니까?")) {
+			$.ajax({
+				type: "post",
+				url: "/pro/insert",
+				data:JSON.stringify(data),
+				contentType:"application/JSON",
+				success: function() {
+					alert("등록 성공!");
+					location.href="/pro/list";
+				}
+			});
+		}
+	});
+</script>
+</html>

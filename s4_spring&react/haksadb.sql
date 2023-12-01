@@ -155,3 +155,11 @@ where e.scode = s.scode
 group by e.scode
 /*having avg_grade >= 80*/
 order by avg_grade desc;
+
+select * from students;
+
+select * from enrollments where scode='92414029';
+
+select *
+from enrollments e, courses c
+where e.lcode = c.lcode and scode='96414404';
