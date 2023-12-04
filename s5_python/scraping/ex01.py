@@ -3,6 +3,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import streamlit as st
 
 url = 'http://www.cgv.co.kr/movies/?lt=1&ft=0'
 res = requests.get(url)
@@ -48,5 +49,22 @@ for movie in movies:
 
 # print(json_movies)
 
-with open('movie.json', 'w', encoding='utf-8') as file:
-    json.dump(json_movies, file, indent='\t', ensure_ascii=False)
+# with open('movie.json', 'w', encoding='utf-8') as file:
+#     json.dump(json_movies, file, indent='\t', ensure_ascii=False)
+
+# print(len(json_movies))
+
+st.set_page_config(layout='wide')
+st.header('CGV 무비차트')
+
+idx = 0
+for row in range(0, 5):
+    cols=st.columns(4)
+    for col in cols:
+        if idx >= 19:
+            break
+        else:
+            movie = json_movies[idx]
+            col.image(movie['image'])
+            col.write(movie['title'])
+            idx += 1
