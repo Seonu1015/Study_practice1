@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/name"
+        android:title="이름으로 정렬" />
+    <item
+        android:id="@+id/phone"
+        android:title="전화번호로 정렬" />
+    <item
+        android:id="@+id/juso"
+        android:title="주소로 정렬" />
+    <item
+        android:id="@+id/search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="검색"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always|collapseActionView" />
+</menu>
