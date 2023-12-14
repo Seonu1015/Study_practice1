@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10sp">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="60sp"
+        android:layout_height="60sp"
+        android:src="@drawable/baseline_library_books_24"
+        android:layout_marginRight="20sp"/>
+
+    <!--제목 한줄로 표시-->
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="여기는 책 제목"
+        android:layout_toRightOf="@id/image"
+        android:ellipsize="end"
+        android:lines="1"/>
+
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="여기는 책 가격"
+        android:layout_toRightOf="@id/image"
+        android:layout_below="@id/title"/>
+
+    <TextView
+        android:id="@+id/authors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="여기는 작가"
+        android:layout_toRightOf="@id/image"
+        android:layout_below="@id/price"/>
+
+</RelativeLayout>
